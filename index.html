@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED 전광판 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&family=Nanum+Myeongjo:wght@700&family=Single+Day&display=swap');
+        
+        .font-gothic { font-family: 'Pretendard', sans-serif; }
+        .font-myeongjo { font-family: 'Nanum Myeongjo', serif; }
+        .font-cute { font-family: 'Single Day', cursive; }
+        
+        .neon-text { text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .scroll { animation: scroll linear infinite; }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-500 overflow-hidden">
+
+<div id="app" class="h-screen w-screen flex flex-col">
+    <!-- 설정 화면 -->
+    <div id="setup-screen" class="flex flex-col h-full">
+        <!-- 상단 미리보기 -->
+        <div id="preview-area" class="h-[40%] flex items-center justify-center overflow-hidden p-4 transition-all duration-300">
+            <div id="display-text" class="text-6xl font-bold whitespace-nowrap">미리보기</div>
+        </div>
+
+        <!-- 하단 컨트롤러 -->
+        <div class="h-[60%] bg-white rounded-t-3xl shadow-2xl p-6 overflow-y-auto">
+            <input type="text" id="text-input" placeholder="문구를 입력하세요" class="w-full p-4 border rounded-xl mb-4 focus:ring-2 focus:ring-teal-400 outline-none">
+            
+            <div class="mb-4">
+                <label class="text-sm text-gray-500 mb-2 block">폰트 스타일</label>
+                <div class="flex gap-2">
+                    <button onclick="setFont('font-gothic')" class="px-4 py-2 bg-gray-100 rounded-full text-sm">고딕</button>
+                    <button onclick="setFont('font-myeongjo')" class="px-4 py-2 bg-gray-100 rounded-full text-sm">명조</button>
+                    <button onclick="setFont('font-cute')" class="px-4 py-2 bg-gray-100 rounded-full text-sm">귀여운체</button>
+                </div>
+            </div>
+
+            <div class="mb-6 flex gap-4">
+                <div>
+                    <label class="text-sm text-gray-500 block">글자색</label>
+                    <input type="color" id="color-picker" value="#14b8a6" class="w-12 h-12 rounded-full cursor-pointer">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 block">배경색</label>
+                    <input type="color" id="bg-color-picker" value="#ffffff" class="w-12 h-12 rounded-full cursor-pointer">
+                </div>
+            </div>
+
+            <button onclick="startFullMode()" class="w-full py-4 bg-teal-500 text-white rounded-2xl font-bold text-lg hover:bg-teal-600 transition shadow-lg">전화면 시작</button>
+        </div>
+    </div>
+
+    <!-- 전체화면 모드 -->
+    <div id="full-screen" class="hidden absolute inset-0 z-50 flex items-center justify-center cursor-pointer" onclick="exitFullMode()">
+        <div id="full-text" class="text-[20vw] font-bold whitespace-nowrap"></div>
+    </div>
+</div>
+
+<script>
+    const state = {
+        text: 'HELLO',
+        font: 'font-gothic',
+        color: '#14b8a6',
+        bg: '#ffffff'
+    };
+
+    const input = document.getElementById('text-input');
+    const display = document.getElementById('display-text');
+    const previewArea = document.getElementById('preview-area');
+    const fullScreen = document.getElementById('full-screen');
+    const fullText = document.getElementById('full-text');
+
+    input.addEventListener('input', (e) => {
+        state.text = e.target.value;
+        updateUI();
+    });
+
+    document.getElementById('color-picker').addEventListener('input', (e) => {
+        state.color = e.target.value;
+        updateUI();
+    });
+
+    document.getElementById('bg-color-picker').addEventListener('input', (e) => {
+        state.bg = e.target.value;
+        updateUI();
+    });
+
+    function setFont(fontClass) {
+        state.font = fontClass;
+        updateUI();
+    }
+
+    function updateUI() {
+        [display, fullText].forEach(el => {
+            el.innerText = state.text;
+            el.className = `${state.font} text-center`;
+            el.style.color = state.color;
+        });
+        previewArea.style.backgroundColor = state.bg;
+    }
+
+    function startFullMode() {
+        fullScreen.classList.remove('hidden');
+        fullScreen.style.backgroundColor = state.bg;
+        // 가로모드 시뮬레이션 및 전체화면 처리는 실제 기기 환경에서 더 명확하게 작동합니다.
+    }
+
+    function exitFullMode() {
+        fullScreen.classList.add('hidden');
+    }
+
+    updateUI();
+</script>
+</body>
+</html>
